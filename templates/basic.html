@@ -1,0 +1,242 @@
+{%extends "index.html"%}
+
+{%block welcome%}
+	{%if user_name%}
+		<p class="user_name">Welcome, {{user_name}}!</p>
+	{%else%}
+        <p class="user_name"><a href="/login">Log in</a></p>
+    {%endif%}
+{%endblock%}
+
+{%block main%}
+<div class="welcome">
+    <div>
+        <h1>Welcome to Travel Agency</h1>
+        <q>the gladdest moment in human life is a departure into unknown lands</q>
+        <cite>Sir Richard Burton</cite>
+    </div>
+</div>
+<div class="information">
+    <div class="slideshow-container">
+        <div class="mySlides fade">
+            <img src="../static/img/slides/img1.jpg" style="width:100%; height: 500px; float: left;">
+        </div>
+        <div class="mySlides fade">
+            <img src="../static/img/slides/img2.jpg" style="width:100%; height: 500px; float: left;">
+        </div>
+        <div class="mySlides fade">
+            <img src="../static/img/slides/img3.jpg" style="width:100%; height: 500px; float: left;">
+        </div>
+        <div class="mySlides fade">
+            <img src="../static/img/slides/img4.jpg" style="width:100%; height: 500px; float: left;">
+        </div>
+    </div>
+    <div class="textInformation">
+        <h2>What is reasons for travel?</h2>
+        <p>People enjoy traveling, but what are their reasons they leave their homes? There are several of them. First comes curiosity. Films about far-off places, books and friends’ stories encourage us to undertake our own trips.<br>
+            Education comes next. Learning through traveling is very popular. It does not mean only visiting museums and admiring architectural ensembles. It also means to get a glimpse of another life style. You can never get that sort of knowledge from books.<br>
+            And besides, there are people who just change places. Probably they have problems at home and that is their way  — rather to escape than to solve. Others look for adventures. We are all different and  and have different motives for traveling.</p>
+    </div>
+</div>
+<section class = "newsContainer">
+    <h2>Posts About Travel</h2>
+</section>
+<section class="openedNewsContainer hidden">
+    <div class="openedNews">
+        <div id="icon" class="closeButton">
+            <span></span>
+            <span></span>
+        </div>
+        <img src="" class="openedNewsImg">
+        <div class="openedNewsName">
+            <div class="nameText"></div>
+            <div class="descriptionText"></div>
+            <div class="openedNewsStatus">
+                <img src="../static/img/comment.png">
+                <span class="newsComments"></span>
+                <input type = "checkbox" class = "hidden" id = "checkboxGiveLike">
+                <label for = "checkboxGiveLike"><img src = "..\static\img\like.png" id = "checkboxLikeImg"></label>
+                <span class="newsStars"></span>
+            </div>
+        </div>
+        <div class="newsCommentsContainer"></div>
+        <form class="addCommentForm" id="addCommentForm" >
+            <textarea class="addCommentFormText" name="comment" placeholder="Comment..."></textarea>
+            <div><img id = "sendCommentButton" src="../static/img/paper-plane.png" ></div>
+        </form>
+    </div>
+</section>
+<script type="text/javascript">
+let slideIndex = 0;
+showSlides();
+
+function showSlides() {
+  let i;
+  let slides = document.getElementsByClassName("mySlides");
+  for (i = 0; i < slides.length; i++) {
+    slides[i].style.display = "none";
+  }
+  slideIndex++;
+  if (slideIndex > slides.length) {slideIndex = 1}
+  slides[slideIndex-1].style.display = "block";
+  setTimeout(showSlides, 5000);
+}
+    //load news
+function showNews(newsArray){
+    let newsTemplate = document.querySelector('#templateNewsExample')
+    let newsExample =newsTemplate.content.querySelector('.newsExample')
+    let newsContainer = document.querySelector('.newsContainer')
+    for(let i  = 0; i < newsArray.length; i++){
+        let newsBlock = newsExample.cloneNode(true)
+        newsBlock.querySelector('.newsImg').src = newsArray[i].image
+        newsBlock.querySelector('.newsComments').innerText = newsArray[i].commentsNumber
+        newsBlock.querySelector('.newsLikes').innerText = newsArray[i].likes
+        newsBlock.querySelector('.newsName').innerText = newsArray[i].name
+        newsContainer.append(newsBlock)
+    }
+}
+
+function picturesGet(){
+    let xhr = new XMLHttpRequest()
+    xhr.open("GET", "/api/get/news/all")
+    xhr.responseType = 'json'
+    xhr.send()
+    xhr.addEventListener('load', function(){
+        let news = xhr.response
+        console.log(news)
+        showNews(news)
+    })
+}
+picturesGet()
+
+//open news
+function showCheckedNews(news){
+    let openedNewsContainer = document.querySelector('.openedNewsContainer')
+    openedNewsContainer.querySelector('.openedNewsImg').src = news.src
+    openedNewsContainer.querySelector('.nameText').innerText = news.name
+    openedNewsContainer.querySelector('.descriptionText').innerText = news.description
+    openedNewsContainer.querySelector('.newsComments').innerText = news.commentsNumber
+    openedNewsContainer.querySelector('.newsStars').innerText = news.likes
+    let commentsContainer = document.querySelector('.newsCommentsContainer')
+    let commentTemplate =  document.querySelector('#commentTemplate').content.querySelector('.commentBlock')
+    for(let i = 0; i < news.commentsNumber; i++){
+        let comment = commentTemplate.cloneNode(true)
+        comment.querySelector('.commentText').innerText = news.comments[i]
+        commentsContainer.append(comment)
+    }
+    openedNewsContainer.classList.remove('hidden')
+}
+
+let newsContainer = document.querySelector('.newsContainer')
+newsContainer.addEventListener('click', function(evt){
+    let checkedElement = evt.target
+    console.log(evt)
+    if(checkedElement.classList.contains('newsImg')){
+        let xhr = new XMLHttpRequest()
+        xhr.open("POST", "/api/get/news/data")
+        xhr.responseType = "json"
+        let formData = new FormData()
+        formData.append('src', checkedElement.getAttribute('src'))
+        xhr.send(formData)
+        xhr.addEventListener('load', function(){
+            let newsData = xhr.response
+            showCheckedNews(newsData)
+        })
+    }
+})
+
+let closeButton = document.querySelector('.closeButton')
+closeButton.addEventListener('click', function(){
+    document.querySelector('.openedNewsContainer').classList.add('hidden')
+    document.querySelector('.newsCommentsContainer').innerHTML = ""
+})
+
+let openedNewsContainer = document.querySelector('.openedNewsContainer')
+let likeCheckboxInput = openedNewsContainer.querySelector('#checkboxGiveLike')
+likeCheckboxInput.addEventListener('click', function(){
+        let openedNewsContainer = document.querySelector('.openedNewsContainer')
+        let likesNumber = Number(openedNewsContainer.querySelector('.newsStars').textContent)
+        let image = openedNewsContainer.querySelector('.openedNewsImg')
+        if(likeCheckboxInput.checked){
+            openedNewsContainer.querySelector('#checkboxLikeImg').src = '../static/img/like_active.png'
+            likesNumber++
+          }else{
+             openedNewsContainer.querySelector('#checkboxLikeImg').src = '../static/img/like.png'
+             likesNumber--
+             let xhr = new XMLHttpRequest()
+             xhr.open("POST", "/api/update/delete/likes")
+             let formData = new FormData()
+             formData.append('src', image.getAttribute('src'))
+             xhr.send(formData)
+        }
+        openedNewsContainer.querySelector('.newsStars').textContent = likesNumber
+})
+
+let commentsContainer = document.querySelector('.newsCommentsContainer')
+closeButton.addEventListener('click', function(){
+	openedNewsContainer.classList.add('hidden')
+	commentsContainer.innerHTML = ""
+	if(openedNewsContainer.querySelector('#checkboxGiveLike').checked){
+        pictureSrc = openedNewsContainer.querySelector('.openedNewsImg').src
+        let xhr = new XMLHttpRequest()
+        xhr.open("POST", "/api/update/add/likes")
+        let formData = new FormData()
+        formData.append('src', pictureSrc)
+        xhr.send(formData)
+    }
+    openedNewsContainer.querySelector('#checkboxLikeImg').src = '../static/img/like.png'
+	openedNewsContainer.querySelector('#checkboxGiveLike').checked = false
+})
+
+let textareaCommentText = document.querySelector('.addCommentFormText')
+let buttonSentComment = document.querySelector('#sendCommentButton')
+
+function changeStatusCommentButton(active){
+    if(active){
+        document.querySelector('#sendCommentButton').src = '../static/img/paper-plane_active.png'
+        document.querySelector('#sendCommentButton').disabled = false
+    }else{
+        document.querySelector('#sendCommentButton').src = '../static/img/paper-plane.png'
+        document.querySelector('#sendCommentButton').disabled = true
+    }
+}
+
+textareaCommentText.addEventListener('input', function(){
+    if(textareaCommentText.value !== ""){
+        changeStatusCommentButton(true)
+    }
+
+})
+
+textareaCommentText.addEventListener('blur', function(){
+    if(textareaCommentText.value !== ""){
+        changeStatusCommentButton(true)
+    } else{
+        changeStatusCommentButton(false)
+    }
+
+})
+
+buttonSentComment.addEventListener('click', function(){
+    if(buttonSentComment.disabled ==  false){
+        form = document.querySelector('#addCommentForm')
+        newsSrc = document.querySelector('.openedNewsImg').src
+        let xhr = new XMLHttpRequest()
+        xhr.open("POST", "/api/add/photo/comments")
+        let formData = new FormData(form)
+        formData.append('src', newsSrc)
+        console.log(formData)
+        xhr.send(formData)
+        let openedNewsContainer = document.querySelector('.openedNewsContainer')
+	    let commentsNumber = openedNewsContainer.querySelector('.newsComments')
+        commentsNumber.innerText = Number(commentsNumber.innerText) + 1
+        let commentTemplate =  document.querySelector('#commentTemplate').content.querySelector('.commentBlock')
+	    let comment = commentTemplate.cloneNode(true)
+        comment.querySelector('.commentText').innerText = form.querySelector('.addCommentFormText').value
+	    commentsContainer.append(comment)
+	    document.querySelector('.addCommentFormText').value = ''
+        changeStatusCommentButton(false)
+    }
+})
+</script>
+{%endblock%}

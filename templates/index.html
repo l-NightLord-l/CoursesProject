@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8">
+		<link rel="stylesheet" href="../static/style.css">
+		<title>Travel</title>
+	</head>
+	<body>
+		<header>
+			<div class="user">
+				{%block welcome%}
+				{%endblock%}
+			</div>
+			<div class="logo">
+				<a href="/">
+					<img src="../static/img/logo.png">
+					<p>Travel Agency</p>
+				</a>
+			</div>
+			<div class="menu-hamburger">
+				<label class="hamburger" for="check">
+   					<input type="checkbox" id="check"/> 
+   					<span></span>
+   					<span></span>
+      				<span></span>
+    			</label>
+			</div>
+			<div class="main-menu-container">
+				<nav class="main-menu">
+					<ul>
+						<li><a href="/">Home</a></li>
+						<li><a href="/add_news">Add Post</a></li>
+						<li><a href="/travel">Travel</a></li>
+						<li><a href="/add_travel">Add new "Discover"</a></li>
+					</ul>
+				</nav>
+			</div>
+			<div class="info">
+				<div class="Facebook">
+					<input type = "checkbox" class = "hidden" id = "Facebook">
+        			<label for = "Facebook"><img src = "../static/img/icons/facebook.png" id="facebookImg">
+        			</label>
+      			</div>
+				<div class="Instagram">
+        			<input type = "checkbox" class = "hidden" id = "Instagram">
+        			<label for = "Instagram"><img src = "../static/img/icons/instagram.png" id = "instagramImg">
+        			</label>
+     		 	</div>
+     		 	<div class="Twitter">
+        			<input type = "checkbox" class = "hidden" id = "Twitter">
+        			<label for = "Twitter"><img src = "../static/img/icons/twitter.png" id = "twitterImg">
+        			</label>
+     		 	</div>
+			</div>
+		</header>
+		<main>
+			{%block main%}
+			{%endblock%}
+		</main>
+		<footer>
+			<p>Travel Agency 2022</p>
+			<p>tel: 0-850-704-66</p>
+			<p>e-mail: info@travelagency.com</p>
+		</footer>
+		<template id = "templateNewsExample">
+			<div class = "newsExample">
+				<img src = "" class = "newsImg">
+				<div class = "newsStatus">
+						<p class="newsName"></p>
+						<span class = "newsComments"></span>
+						<img src="../static/img/comment.png">
+						<span class = "newsLikes"></span>
+						<img src="../static/img/like_active.png">
+				</div>
+			</div>
+		</template>
+		<template id="commentTemplate">
+			<div class="commentBlock">
+				<p class="commentText"></p>
+				{%if user_name%}
+				<p class="commentAuthor">{{user_name}}</p>
+				{%else%}
+				<p class="commentAuthor">Annonymous</p>
+				{%endif%}
+			</div>
+		</template>
+		<script src="../static/script.js"></script>
+	</body>
+</html>

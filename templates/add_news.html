@@ -1,0 +1,29 @@
+{%extends "index.html"%}
+
+{%block main%}
+<div class="addNews">
+	<form name = “add_article” method="post" action="/add_news" enctype="multipart/form-data">
+		<h2>Add Post</h2>
+		<p>Post title</p>
+		<input name="name" type="text" required>
+		<p>Post description</p>
+		<textarea name="description" required rows="15" cols="100"></textarea>
+		<p>Image URL</p>
+		<input id="inputUploadFile" name="file" type="file" required>
+		<label for = "inputUploadFile"></label><br>
+		<button name="submit" type="submit">ADD POST</button>
+		<button name="reset" type="reset">RESET</button>
+	</form>
+</div>
+<script type="text/javascript">
+let inputUploadFile = document.querySelector('#inputUploadFile')
+inputUploadFile.addEventListener('change', function(){
+	if(inputUploadFile.files[0].type.includes('image')){
+		let reader = new FileReader()
+		reader.readAsDataURL(inputUploadFile.files[0])
+	} else{
+		alert('Виберіть зображення!')
+	}
+})
+</script>
+{%endblock%}

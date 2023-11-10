@@ -1,0 +1,17 @@
+{%extends "index.html"%}
+
+{%block main%}
+<section id = "templateTravel">
+	{%for travel in travels%}
+	<div class = "travelBody">
+		<div class = "travelImg"><img src = "../static/img/travel/{{ travel.travel_image }}"></div>
+		<div class="travelText">
+			<div>
+				<h3 class="name">{{ travel.travel_name }}</h3>
+				<p class="text">{{ travel.travel_text }}</p>
+			</div>
+		</div>
+	</div>
+	{%endfor%}
+</section>
+{%endblock%}
